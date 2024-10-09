@@ -1,0 +1,194 @@
+{
+    "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+    "data": {"url": "https://raw.githubusercontent.com/Dylan-32845480/fit3179/refs/heads/week10homework/data/2023_AirportPassengerData.csv"},
+    "width": 350,
+    "title": "Passengers by type of air travel in 2023",
+    "params": [
+        {
+            "name": "travel_select",
+            "bind": {
+                "input": "select",
+                "options": [
+                    null,
+                    "KLIA",
+                    "PULAU PINANG",
+                    "KOTA KINABALU",
+                    "KUCHING",
+                    "LANGKAWI",
+                    "JOHOR BAHRU",
+                    "KOTA BHARU",
+                    "IPOH",
+                    "KUALA TERENGGANU",
+                    "ALOR SETAR",
+                    "MELAKA",
+                    "SUBANG",
+                    "KUANTAN",
+                    "TIOMAN",
+                    "REDANG",
+                    "LABUAN",
+                    "LAHAD DATU",
+                    "SANDAKAN",
+                    "TAWAU",
+                    "BINTULU",
+                    "MIRI",
+                    "SIBU",
+                    "MULU",
+                    "LIMBANG",
+                    "MUKAH"
+                ], "labels":[
+                    "Show All",
+                    "KLIA",
+                    "PULAU PINANG",
+                    "KOTA KINABALU",
+                    "KUCHING",
+                    "LANGKAWI",
+                    "JOHOR BAHRU",
+                    "KOTA BHARU",
+                    "IPOH",
+                    "KUALA TERENGGANU",
+                    "ALOR SETAR",
+                    "MELAKA",
+                    "SUBANG",
+                    "KUANTAN",
+                    "TIOMAN",
+                    "REDANG",
+                    "LABUAN",
+                    "LAHAD DATU",
+                    "SANDAKAN",
+                    "TAWAU",
+                    "BINTULU",
+                    "MIRI",
+                    "SIBU",
+                    "MULU",
+                    "LIMBANG",
+                    "MUKAH"
+                ],  
+                "name": "Airport Selection: "
+            }
+        }
+    ],
+    
+    "transform": [
+        {
+          "fold": ["Domestic Arrivals", "International Arrivals", "Domestic Departures", "International Departures"],
+          "as": ["measure", "value"]
+        },
+        {
+          "filter": "datum.value > 0"
+        },
+        {
+            "filter": "travel_select == null || travel_select == datum.Airports"
+        },
+        {
+            "calculate": "datum.value / datum.Total_TOTAL",
+            "as": "percentage"
+        },
+        {
+            "filter": "datum.percentage > 0.01"
+        }
+    ],
+    "encoding": {
+        "y": {
+            "field": "Airports",
+            "type": "nominal",
+            "title": "Airport"
+        },
+        "x": {
+            "aggregate": "sum",
+            "field": "value",
+            "type": "quantitative",
+            "title": "Percentage of total passengers",
+            "stack":  "normalize",
+            "axis": {
+                "format": "%"
+            }
+        },
+        "color": {
+            "legend": {
+                "orient": "none",
+                "legendX": 375
+            }
+        }
+    },
+    "layer": [
+        {
+            "mark": "bar",
+            "encoding": {
+                "color": {
+                    "field": "measure",
+                    "type": "nominal",
+                    "scale": {
+                        "domain": ["Domestic Arrivals", "Domestic Departures", "International Arrivals", "International Departures"],
+                        "range": ["#0072B2", "#D95F02", "#009E73", "#CC79A7"]
+                    },
+                    "title": "Type of air travel"
+                },
+                "tooltip": [
+                    {
+                    "field": "measure",
+                    "type": "nominal",
+                    "title": "Type of air travel"
+                    },
+                    {
+                    "field": "value",
+                    "type": "quantitative",
+                    "title": "Number of passengers"
+                    },
+                    {
+                        "field": "percentage",
+                        "type": "quantitative",
+                        "title": "Percentage of total passengers",
+                        "format": ".0%"
+                    }
+                ]
+            }
+        },
+        {
+            "mark": {
+                "type": "text",
+                "dx": 0,
+                "align": "center",
+                "fontSize": 9
+            },
+            "transform": [
+                {
+                    "filter": "datum.percentage > 0.05"
+                }
+            ],
+            
+            "encoding": {
+                "x": {
+                    "aggregate": "sum", "field": "value",
+                    "stack":  "normalize",
+                    "bandPosition": 0.5
+                },
+                "text": {
+                    "aggregate": "sum", "field": "percentage",
+                    "format": ".0%"
+                },
+                "detail": {
+                    "field": "measure"
+                },
+                "color": {"value":"#F0F0F0"},
+                "tooltip": [
+                    {
+                    "field": "measure",
+                    "type": "nominal",
+                    "title": "Type of air travel"
+                    },
+                    {
+                    "field": "value",
+                    "type": "quantitative",
+                    "title": "Number of passengers"
+                    },
+                    {
+                        "field": "percentage",
+                        "type": "quantitative",
+                        "title": "Percentage of total passengers",
+                        "format": ".0%"
+                    }
+                ]
+            }
+        }
+    ]
+}
